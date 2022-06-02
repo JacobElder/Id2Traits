@@ -1300,7 +1300,7 @@ for(i in uIds){
     
 
     
-    curSimDf <- cbind(subID = rep(i,length(simVect)), pair = 1:28, idSim = simVect, posDist = posVect, strengDist = strengVect, unifDist = c, mallDist = mallVect)
+    curSimDf <- cbind(subID = rep(i,length(simVect)), pair = 1:28, idSim = simVect, idtSim = simVectIT, idtpSim = simVectIT.p, idtnSim = simVectIT.n, posDist = posVect, strengDist = strengVect, unifDist = c, mallDist = mallVect)
     
     
     if(any(apply(curSimDf, 2, length)!=28)){

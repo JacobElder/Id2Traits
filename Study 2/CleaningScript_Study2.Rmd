@@ -1143,14 +1143,6 @@ for(i in uIds){
     # Dice Similarity in All Shared Traits
     simIT=similarity.dice(curGraphItoT)
     simIT=simIT[1:8,1:8]
-    simVectIT=sim[lower.tri(sim)==T]
-    if(length(simVect)<28){
-      break
-    }
-    
-    # Dice Similarity in All Shared Traits
-    simIT=similarity.dice(curGraphItoT)
-    simIT=simIT[1:8,1:8]
     simVectIT=simIT[lower.tri(simIT)==T]
     if(length(simVectIT)<28){
       break
