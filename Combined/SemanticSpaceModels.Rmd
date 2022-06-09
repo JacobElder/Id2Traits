@@ -1,0 +1,22 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+load("~/Downloads/TASA.rda")
+load("~/Downloads/EN_100k.rda")
+load("~/Downloads/ukwac_cbow.rda")
+load("~/Downloads/baroni.rda")
+```
+
+```{r}
+orderDf1$baroni <- pairwise(tolower(orderDf1$idQ), tolower(orderDf1$traits), tvectors = baroni)
+```
+
+
+```{r}
+baroniModel<-lmer(scale(selfResp) ~ scale(baroni) * scale(streng) + scale(subTend) + scale(traitTend)   + ( scale(baroni) | subID ) + ( 1 | traits), data=orderDf1, control=lmerControl(optimizer="bobyqa",
+                                 optCtrl=list(maxfun=2e5)))
+summary(sm1)
+```

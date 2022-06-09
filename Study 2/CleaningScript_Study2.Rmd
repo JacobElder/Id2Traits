@@ -580,6 +580,34 @@ colnames(idDf) <- x
 colnames(idToTraitDf) <- x2
 ```
 
+```{r}
+# get list of all adjacency matrices
+adjList<-lapply(uIds, function(x) get(paste0("subItoTonlyFMat.",x)))
+
+# subject tendency to nominate traits across all identities
+adjListI<-lapply(adjList,'[',1:8,)
+sumNomsAcrossIdentities <- lapply(adjListI, function(x) mean(rowSums(x)) )
+
+# trait tendency to be nominated across all 
+# adjListT<-lapply(adjList, function(x) x[1:8,9:304])
+# sumNomsAcrossTraits <- lapply(adjListT, function(x) colSums(x))
+adjListT<-lapply(adjList, function(x) x[1:8,9:304])
+sumsAcrossTraits <- lapply(adjListT, function(x) (colSums(x)))
+sumNomsAcrossTraits <- colMeans(do.call(rbind, sumsAcrossTraits))
+
+tendSubdDf <- as.data.frame(
+  cbind(subID = uIds, 
+        subTend = unlist(sumNomsAcrossIdentities)
+)
+)
+
+tendTraitDf <- as.data.frame(
+  cbind(traits = names(sumNomsAcrossTraits), 
+        traitTend = unlist(sumNomsAcrossTraits)
+)
+)
+```
+
 
 ```{r}
 # traits that are one order distance from identity
@@ -1246,6 +1274,18 @@ veryLong <- merge(veryLong, qcidlong, by = c("subID","id"))
 veryLong <- merge(veryLong, indDiff[c("subID","SE","SCC","NFC","Ind","Inter","SWLS","DS","MemSE","PrivCSE","PubCSE","IdImp","CESD")], by = "subID", all.x=T)
 veryLong <- merge(veryLong, globalIDDf, by = "subID", all.x = T)
 veryLong <- merge(veryLong, idToTraitDf, by = c("subID","traits"))
+```
+
+```{r}
+veryLong <- merge(veryLong, tendSubdDf, by = "subID", all.x=T)
+orderDf <- merge(orderDf, tendSubdDf, by = "subID", all.x=T)
+idShort <- merge(idShort, tendSubdDf, by = "subID", all.x=T)
+indDiffSmall <- merge(indDiffSmall, tendSubdDf, by = "subID", all.x=T)
+fullSimDf <- merge(fullSimDf, tendSubdDf, by = "subID", all.x=T)
+
+
+veryLong <- merge(veryLong, tendTraitDf, by = "traits", all.x=T)
+orderDf <- merge(orderDf, tendTraitDf, by = "traits", all.x=T)
 ```
 
 ```{r}
