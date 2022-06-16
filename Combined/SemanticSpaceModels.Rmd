@@ -4,6 +4,11 @@ output: html_notebook
 ---
 
 ```{r}
+library(LSAfun)
+```
+
+
+```{r}
 load("~/Downloads/TASA.rda")
 load("~/Downloads/EN_100k.rda")
 load("~/Downloads/ukwac_cbow.rda")
@@ -12,11 +17,31 @@ load("~/Downloads/baroni.rda")
 
 ```{r}
 orderDf1$baroni <- pairwise(tolower(orderDf1$idQ), tolower(orderDf1$traits), tvectors = baroni)
+fullLong1$baroni <- pairwise(tolower(fullLong1$idQ), tolower(fullLong1$traits), tvectors = baroni)
+
+orderDf2$baroni <- pairwise(tolower(orderDf2$idQ), tolower(orderDf2$traits), tvectors = baroni)
+fullLong2$baroni <- pairwise(tolower(fullLong2$idQ), tolower(fullLong2$traits), tvectors = baroni)
+```
+
+```{r}
+baroniConnect <- lmer(scale(selfResp) ~ connect*scale(baroni)*scale(streng) + scale(subTend) + scale(traitTend) + ( connect | subID ) + ( 1 | traits), data=fullLong1)
+summary(baroniConnect)
 ```
 
 
+
+
 ```{r}
-baroniModel<-lmer(scale(selfResp) ~ scale(baroni) * scale(streng) + scale(subTend) + scale(traitTend)   + ( scale(baroni) | subID ) + ( 1 | traits), data=orderDf1, control=lmerControl(optimizer="bobyqa",
+baroniModel<-lmer(scale(selfResp) ~ scale(baroni) * scale(streng) * valence + scale(subTend) + scale(traitTend)   + ( scale(baroni) + valence | subID ) + ( 1 | traits), data=orderDf1, control=lmerControl(optimizer="bobyqa",
                                  optCtrl=list(maxfun=2e5)))
-summary(sm1)
+summary(baroniModel)
+ggpredict(baroniModel, c("baroni","streng","valence")) %>% plot(show.title=FALSE) + jtools::theme_apa() + xlab("Semantic Similarity") + ylab("Self-Evaluation")
+
+```
+
+```{r}
+baroniModel2<-lmer(scale(selfResp) ~ scale(baroni) * scale(streng) * valence + scale(subTend) + scale(traitTend)   + ( scale(baroni) + valence | subID ) + ( 1 | traits), data=orderDf2, control=lmerControl(optimizer="bobyqa",
+                                 optCtrl=list(maxfun=2e5)))
+summary(baroniModel2)
+ggpredict(baroniModel2, c("baroni","streng","valence")) %>% plot(show.title=FALSE) + jtools::theme_apa() + xlab("Semantic Similarity") + ylab("Self-Evaluation")
 ```

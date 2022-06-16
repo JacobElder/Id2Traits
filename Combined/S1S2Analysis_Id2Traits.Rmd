@@ -1,6 +1,8 @@
 ---
 title: "R Notebook"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r}
@@ -18,21 +20,19 @@ source_url("https://raw.githubusercontent.com/JacobElder/MiscellaneousR/master/p
 ```
 
 ```{r}
-fullLong1 <- read.csv("~/Google Drive/Volumes/Research Project/Identities to Traits/Study 1/Cleaning/Output/id2traitDf.csv", header = T)
-orderDf1 <- read.csv( "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 1/Cleaning/Output/orderDf.csv", header = T)
-idShort1 <- read.csv( "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 1/Cleaning/Output/id2traitShort.csv", header = T)
-indDiff1 <- read.csv( "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 1/Cleaning/Output/indDiff.csv", header = T)
-idSim1 <- read.csv( "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 1/Cleaning/Output/identitySimDf.csv", header = T)
-#idToSim1 <- read.csv("~/Google Drive/Volumes/Research Project/Identities to Traits/Study 1/Cleaning/Output/simDf.csv", header = T)
+fullLong1 <- data.table::fread("~/Google Drive/Volumes/Research Project/Identities to Traits/Study 1/Cleaning/Output/id2traitDf.csv")
+orderDf1 <- data.table::fread( "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 1/Cleaning/Output/orderDf.csv")
+idShort1 <- data.table::fread( "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 1/Cleaning/Output/id2traitShort.csv")
+indDiff1 <- data.table::fread( "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 1/Cleaning/Output/indDiff.csv")
+idSim1 <- data.table::fread( "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 1/Cleaning/Output/identitySimDf.csv")
 ```
 
 ```{r}
-fullLong2 <- read.csv("~/Google Drive/Volumes/Research Project/Identities to Traits/Study 2/Cleaning/Output/id2traitDf.csv", header = T)
-orderDf2 <- read.csv( "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 2/Cleaning/Output/orderDf.csv", header = T)
-idShort2 <- read.csv( "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 2/Cleaning/Output/id2traitShort.csv", header = T)
-indDiff2 <- read.csv( "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 2/Cleaning/Output/indDiff.csv", header = T)
-idSim2 <- read.csv( "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 2/Cleaning/Output/identitySimDf.csv", header = T)
-#idToSim2 <- read.csv("~/Google Drive/Volumes/Research Project/Identities to Traits/Study 2/Cleaning/Output/simDf.csv", header = T)
+fullLong2 <- data.table::fread("~/Google Drive/Volumes/Research Project/Identities to Traits/Study 2/Cleaning/Output/id2traitDf.csv")
+orderDf2 <- data.table::fread( "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 2/Cleaning/Output/orderDf.csv")
+idShort2 <- data.table::fread( "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 2/Cleaning/Output/id2traitShort.csv")
+indDiff2 <- data.table::fread( "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 2/Cleaning/Output/indDiff.csv")
+idSim2 <- data.table::fread( "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 2/Cleaning/Output/identitySimDf.csv")
 ```
 
 ```{r}
@@ -162,7 +162,7 @@ plotCommAxes(moconn1.plot, moconn2.plot, "Identity-Typicality", "Self-Evaluation
 ## Study 1
 
 ```{r}
-sm1<-lmer(scale(selfResp) ~ scale(T.Sim) * scale(streng) + scale(subTend) + scale(traitTend)   + ( scale(order) | subID ) + ( 1 | traits), data=orderDf1, control=lmerControl(optimizer="bobyqa",
+sm1<-lmer(scale(selfResp) ~ scale(T.Sim) * scale(streng) + scale(subTend) + scale(traitTend)   + ( scale(T.Sim) | subID ) + ( 1 | traits), data=orderDf1, control=lmerControl(optimizer="bobyqa",
                                  optCtrl=list(maxfun=2e5)))
 summary(sm1)
 sm1.plot <- ggpredict(sm1, c("T.Sim", "streng")) %>% plot(show.title=FALSE) + jtools::theme_apa() + xlab("Overlap with Identity") + ylab("Self-Evaluation")
@@ -172,7 +172,7 @@ sm1.plot
 ## Study 2
 
 ```{r}
-sm2<-lmer(scale(selfResp) ~ scale(T.Sim) * scale(streng) + scale(subTend) + scale(traitTend)  + ( scale(order) | subID ) + ( 1 | traits), data=orderDf2, control=lmerControl(optimizer="bobyqa",
+sm2<-lmer(scale(selfResp) ~ scale(T.Sim) * scale(streng) + scale(subTend) + scale(traitTend)  + ( scale(T.Sim) | subID ) + ( 1 | traits), data=orderDf2, control=lmerControl(optimizer="bobyqa",
                                  optCtrl=list(maxfun=2e5)))
 summary(sm2)
 sm2.plot <- ggpredict(sm2, c("T.Sim", "streng")) %>% plot(show.title=FALSE) + jtools::theme_apa() + xlab("Overlap with Identity") + ylab("Self-Evaluation")
@@ -898,6 +898,9 @@ for(i in 1:length(networkMeasures)){
 
 ```{r}
 normTraits <- read.csv("~/Google Drive/Volumes/Research Project/Identities to Traits/Study 2/Cleaning/Output/Normative/normativeDfStudy12.csv", header = T)
+posTraits <- read.csv("~/Google Drive/Volumes/Research Project/Trait Network_Behaviral/generating network/output/allPosCents.csv")
+negTraits <- read.csv("~/Google Drive/Volumes/Research Project/Trait Network_Behaviral/generating network/output/allNegCents.csv")
+traits <- rbind(posTraits,negTraits)
 
 fullLong1s <- fullLong1 %>% select(subID,id,idC,connect,traits,selfResp,IdIn,connect,streng)
 fullLong2s <- fullLong2 %>% select(subID,id,idC,connect,traits,selfResp,IdIn,connect,streng)
@@ -919,6 +922,16 @@ combLong$ynAthei <- ifelse(combLong$idC==9 & combLong$id=="Rel", "Ath", "Not Ath
 combLong$ynDem <- ifelse(combLong$idC==1 & combLong$id=="Pol", "Dem", "Not Dem")
 ```
 
+## Correlations
+
+```{r}
+traits <- rbind(posTraits,negTraits)
+norms <- normTraits %>% select(Latino:Democrat)
+traits <- cbind(traits,norms)
+traitvars <- traits %>% select(desirability:prevalence, outDegree:inDegree)
+cor(norms, traitvars)
+```
+
 ```{r}
 raceLong <- subset(combLong, id == "Race")
 m <- lmer( scale(selfResp) ~ scale(Latino)*ynLatin + ( scale(Latino) | subID) + ( 1 | traits), data = raceLong)
@@ -930,19 +943,11 @@ ggpredict(m, c("Latino", "ynLatin")) %>% plot()
 m <- lmer( scale(selfResp) ~ scale(Asian)*ynAsian + ( scale(Asian) | subID) + ( 1 | traits), data = raceLong)
 summary(m)
 ggpredict(m, c("Asian", "ynAsian")) %>% plot()
-
-m <- lmer( scale(selfResp) ~ scale(Asian)*ynAsian*streng + ( scale(Asian) | subID) + ( 1 | traits), data = raceLong)
-summary(m)
-ggpredict(m, c("Asian", "streng")) %>% plot()
 ```
 
 ```{r}
 GenLong <- subset(combLong, id=="Gen")
 m <- lmer( scale(selfResp) ~ scale(Female)*ynFemale + ( scale(Female) | subID) + ( 1 | traits), data = GenLong)
-summary(m)
-ggpredict(m, c("Female", "ynFemale")) %>% plot()
-
-m <- lmer( scale(selfResp) ~ scale(Female)*ynFemale*streng + ( scale(Female) | subID) + ( 1 | traits), data = GenLong)
 summary(m)
 ggpredict(m, c("Female", "ynFemale")) %>% plot()
 ```

@@ -1,0 +1,186 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+```
+
+
+```{r}
+fullLong1 <- read.csv("~/Google Drive/Volumes/Research Project/Identities to Traits/Study 1/Cleaning/Output/id2traitDf.csv", header = T)
+fullLong2 <- read.csv("~/Google Drive/Volumes/Research Project/Identities to Traits/Study 2/Cleaning/Output/id2traitDf.csv", header = T)
+fullLong2$subID <- fullLong2$subID + 100000
+
+normTraits <- read.csv("~/Google Drive/Volumes/Research Project/Identities to Traits/Study 2/Cleaning/Output/Normative/normativeDfStudy12.csv", header = T)
+
+posTraits <- read.csv("~/Google Drive/Volumes/Research Project/Trait Network_Behaviral/generating network/output/allPosCents.csv")
+
+negTraits <- read.csv("~/Google Drive/Volumes/Research Project/Trait Network_Behaviral/generating network/output/allNegCents.csv")
+
+traits <- rbind(posTraits,negTraits)
+```
+
+```{r}
+# data.frame(subID = c(fullLong1$subID, fullLong2$subID) ,
+#       traits = c(fullLong1$traits, fullLong2$traits) ,
+#       id = c(fullLong1$id, fullLong2$id) , 
+#       idQ = c(fullLong1$idQ, fullLong2$idQ)
+#       )
+
+fullLong1s <- fullLong1 %>% select(subID,id,idC,connect,traits,selfResp,IdIn)
+fullLong2s <- fullLong2 %>% select(subID,id,idC,connect,traits,selfResp,IdIn)
+
+fullLong <- rbind(fullLong1s,fullLong2s)
+```
+
+```{r}
+fullLong <- merge(fullLong, normTraits, by = "traits")
+fullLong$HL <- ifelse(fullLong$idC==2 & fullLong$id=="Race", "HL", "Not HL")
+fullLong$As <- ifelse(fullLong$idC==4 & fullLong$id=="Race", "As", "Not As")
+fullLong$Ma <- ifelse(fullLong$idC==1 & fullLong$id=="Gen", "M", "Not M")
+fullLong$Fe <- ifelse(fullLong$idC==2 & fullLong$id=="Gen", "F", "Not F")
+fullLong$Het <- ifelse(fullLong$idC==1 & fullLong$id=="Sex", "Het", "Not Het")
+fullLong$Bi <- ifelse(fullLong$idC==3 & fullLong$id=="Sex", "Bi", "Not Bi")
+fullLong$Cath <- ifelse(fullLong$idC==1 & fullLong$id=="Rel", "Cath", "Not Cath")
+fullLong$Christ <- ifelse(fullLong$idC==2 & fullLong$id=="Rel", "Christ", "Not Christ")
+fullLong$Agn <- ifelse(fullLong$idC==8 & fullLong$id=="Rel", "Agn", "Not Agn")
+fullLong$Ath <- ifelse(fullLong$idC==9 & fullLong$id=="Rel", "Ath", "Not Ath")
+fullLong$Dem <- ifelse(fullLong$idC==1 & fullLong$id=="Pol", "Dem", "Not Dem")
+```
+
+#
+
+```{r}
+library(lmerTest)
+library(dplyr)
+library(ggeffects)
+```
+
+# Correlations
+
+```{r}
+norms <- normTraits %>% select(Latino:Democrat)
+traitvars <- traits %>% select(desirability:prevalence, outDegree:inDegree)
+cor(norms, traitvars)
+```
+
+
+## Latino
+
+```{r}
+raceLong <- subset(fullLong, id == "Race")
+m <- lmer( scale(selfResp) ~ scale(Latino)*HL + ( scale(Latino) | subID) + ( 1 | traits), data = raceLong)
+summary(m)
+ggpredict(m, c("Latino", "HL")) %>% plot()
+```
+
+
+```{r}
+m <- lmer( scale(selfResp) ~ scale(Asian)*As + ( scale(Asian) | subID) + ( 1 | traits), data = raceLong)
+summary(m)
+ggpredict(m, c("Asian", "As")) %>% plot()
+```
+
+```{r}
+GenLong <- subset(fullLong, id=="Gen")
+m <- lmer( scale(selfResp) ~ scale(Female)*Fe + ( scale(Female) | subID) + ( 1 | traits), data = GenLong)
+summary(m)
+ggpredict(m, c("Female", "Fe")) %>% plot()
+```
+
+```{r}
+m <- lmer( scale(selfResp) ~ scale(Male)*Ma + ( scale(Male) | subID) + ( 1 | traits), data = GenLong)
+summary(m)
+ggpredict(m, c("Male", "Ma")) %>% plot()
+```
+
+```{r}
+RelLong <- subset(fullLong, id=="Rel")
+m <- lmer( scale(selfResp) ~ scale(Catholic)*Cath + ( scale(Catholic) | subID) + ( 1 | traits), data = RelLong)
+summary(m)
+ggpredict(m, c("Catholic", "Cath")) %>% plot()
+```
+
+```{r}
+m <- lmer( scale(selfResp) ~ scale(Christian)*Christ + ( scale(Christian) | subID) + ( 1 | traits), data = RelLong)
+summary(m)
+ggpredict(m, c("Christian", "Christ")) %>% plot()
+```
+
+```{r}
+m <- lmer( scale(selfResp) ~ scale(Atheist)*Ath + ( scale(Atheist) | subID) + ( 1 | traits), data = RelLong)
+summary(m)
+ggpredict(m, c("Atheist", "Ath")) %>% plot()
+```
+
+```{r}
+m <- lmer( scale(selfResp) ~ scale(Agnostic)*Agn + ( scale(Agnostic) | subID) + ( 1 | traits), data = RelLong)
+summary(m)
+ggpredict(m, c("Agnostic", "Agn")) %>% plot()
+```
+
+```{r}
+PolLong <- subset(fullLong, id=="Pol")
+m <- lmer( scale(selfResp) ~ scale(Democrat)*Dem + ( scale(Democrat) | subID) + ( 1 | traits), data = PolLong)
+summary(m)
+ggpredict(m, c("Democrat", "Dem")) %>% plot()
+```
+
+# Simulation
+
+```{r}
+  logsumexp <- function (x) {
+    y <- max(x)
+    y + log(sum(exp(x - y)))
+  }
+  softmax <- function (x) {
+    exp(x - logsumexp(x))
+  }
+  
+  sigmoid <- function(input, slope=1, shift=0){
+  input = input - .5
+  output = 1 / (1 + exp(slope * -(input) - shift ) )
+  #output = (output * 6) + 1
+  return(output)
+  }
+LatinoCentered <-  scale(normTraits$Latino, scale = F) + .5
+```
+
+
+```{r}
+iter <- 1000
+summedActivated <- rep(0,296)
+Temps <- c(.25, .5, .75, 1, 1.25, 1.5, 1.75, 2)
+fullMat <- matrix(ncol=3,nrow=0)
+
+for(temp in Temps){
+  #for(i in 1:iter){
+    
+    propActivated <- rowMeans( do.call(cbind,
+      lapply(1:iter, function(x) 
+      unlist( lapply( LatinoCentered , function(x) sample( c(1,0), 1, prob= softmax(temp * c(x,1-x) ) ) ) ) 
+      )
+    )
+    )
+    
+  #}
+  curMat <- cbind(rep(temp,296), normTraits$traits, propActivated)
+  fullMat <- rbind(fullMat, curMat)
+}
+fullMat<-as.data.frame(fullMat)
+colnames(fullMat) <- c("temp","trait","prop")
+fullMat$temp <- as.numeric(fullMat$temp)
+fullMat$prop <- as.numeric(fullMat$prop)
+```
+
+
+```{r}
+library(ggplot2)
+LatinoStereotypicTraits <- normTraits$traits[which(normTraits$Latino > .25)]
+LatinoMat <- fullMat[fullMat$trait %in% LatinoStereotypicTraits,]
+ggplot(LatinoMat, aes(x=trait, y=prop, fill=as.factor(temp) )) +
+    geom_bar(stat='identity', position='dodge')+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+

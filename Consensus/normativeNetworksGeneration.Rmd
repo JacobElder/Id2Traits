@@ -1,0 +1,639 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+load("~/Google Drive/Volumes/Research Project/Identities to Traits/Study 1/Cleaning/Output/id2traitsworkspace.RData")
+```
+
+
+# Hispanic
+
+```{r}
+nLatino <- sum(rawFirst$RaceC=="Hispanic/Latino")
+maxLatinoMat <- matrix(nrow=304,ncol=304,nLatino)
+totalLatinoMat <- matrix(nrow=304,ncol=304,0)
+LatinoIDs <- rawFirst$id[rawFirst$RaceC=="Hispanic/Latino"]
+LatinoAllNoms1 <- matrix(nrow=nLatino, ncol=296)
+for(i in 1:length(LatinoIDs)){
+  totalLatinoMat = totalLatinoMat + get(paste0("subTFMat.",LatinoIDs[i]))
+  LatinoAllNoms1[i, ] <- get(paste0("subTFMat.",LatinoIDs[i]))[1,9:304]
+}
+Latinothreshold <- round(.25 * nLatino)
+
+
+# use totalMatrixP devided by the maxmatrixP to see the % of the endorcement
+connectProb <-totalLatinoMat*(maxLatinoMat^(-1))
+LatinoConnectProb1 <- connectProb
+totalLatinoMat1 <- totalLatinoMat
+maxLatinoMat1 <- maxLatinoMat
+normativeDf <- data.frame(traits = colnames(connectProb[,9:304]), Latino=connectProb[1,9:304])
+```
+
+# Asian
+
+```{r}
+nAsian <- sum(rawFirst$RaceC=="Asian")
+maxAsianMat <- matrix(nrow=304,ncol=304,nAsian)
+totalAsianMat <- matrix(nrow=304,ncol=304,0)
+AsianIDs <- rawFirst$id[rawFirst$RaceC=="Asian"]
+AsianAllNoms1 <- matrix(nrow=nAsian, ncol=296)
+for(i in 1:length(AsianIDs)){
+  totalAsianMat = totalAsianMat + get(paste0("subTFMat.",AsianIDs[i]))
+  AsianAllNoms1[i, ] <- get(paste0("subTFMat.",AsianIDs[i]))[1,9:304]
+}
+Asianthreshold <- round(.25 * nAsian)
+
+
+# use totalMatrixP devided by the maxmatrixP to see the % of the endorcement
+connectProb <-totalAsianMat*(maxAsianMat^(-1))
+AsianConnectProb1 <- connectProb
+totalAsianMat1 <- totalAsianMat
+maxAsianMat1 <- maxAsianMat
+normativeDf <- cbind(normativeDf, Asian = connectProb[1,9:304])
+```
+
+# Men
+
+```{r}
+nMale <- sum(rawFirst$GenderC=="Male")
+maxMaleMat <- matrix(nrow=304,ncol=304,nMale)
+totalMaleMat <- matrix(nrow=304,ncol=304,0)
+MaleIDs <- rawFirst$id[rawFirst$GenderC=="Male"]
+MaleAllNoms1 <- matrix(nrow=nMale, ncol=296)
+for(i in 1:length(MaleIDs)){
+  totalMaleMat = totalMaleMat + get(paste0("subTFMat.",MaleIDs[i]))
+  MaleAllNoms1[i, ] <- get(paste0("subTFMat.",MaleIDs[i]))[2,9:304]
+}
+Malethreshold <- round(.25 * nMale)
+
+# use totalMatrixP devided by the maxmatrixP to see the % of the endorcement
+connectProb <-totalMaleMat*(maxMaleMat^(-1))
+MaleConnectProb1 <- connectProb
+MaleConnectProb1 <- connectProb
+totalMaleMat1 <- totalMaleMat
+maxMaleMat1 <- maxMaleMat
+normativeDf <- cbind(normativeDf, Male = connectProb[2,9:304])
+```
+
+# Women
+
+```{r}
+nFemale <- sum(rawFirst$GenderC=="Female")
+maxFemaleMat <- matrix(nrow=304,ncol=304,nFemale)
+totalFemaleMat <- matrix(nrow=304,ncol=304,0)
+FemaleIDs <- rawFirst$id[rawFirst$GenderC=="Female"]
+FemaleAllNoms1 <- matrix(nrow=nFemale, ncol=296)
+for(i in 1:length(FemaleIDs)){
+  totalFemaleMat = totalFemaleMat + get(paste0("subTFMat.",FemaleIDs[i]))
+  FemaleAllNoms1[i, ] <- get(paste0("subTFMat.",FemaleIDs[i]))[2,9:304]
+}
+Femalethreshold <- round(.25 * nFemale)
+
+
+# use totalMatrixP devided by the maxmatrixP to see the % of the endorcement
+connectProb <-totalFemaleMat*(maxFemaleMat^(-1))
+FemaleConnectProb <- connectProb
+FemaleConnectProb1 <- connectProb
+totalFemaleMat1 <- totalFemaleMat
+maxFemaleMat1 <- maxFemaleMat
+normativeDf <- cbind(normativeDf, Female = connectProb[2,9:304])
+```
+
+# Bisexual
+
+```{r}
+nBisexual <- sum(rawFirst$SexC=="Bisexual")
+maxBisexualMat <- matrix(nrow=304,ncol=304,nBisexual)
+totalBisexualMat <- matrix(nrow=304,ncol=304,0)
+BisexualIDs <- rawFirst$id[rawFirst$SexC=="Bisexual"]
+BisexualAllNoms1 <- matrix(nrow=nBisexual, ncol=296)
+for(i in 1:length(BisexualIDs)){
+  totalBisexualMat = totalBisexualMat + get(paste0("subTFMat.",BisexualIDs[i]))
+  BisexualAllNoms1[i, ] <- get(paste0("subTFMat.",BisexualIDs[i]))[3,9:304]
+}
+Bisexualthreshold <- round(.25 * nBisexual)
+
+
+# use totalMatrixP devided by the maxmatrixP to see the % of the endorcement
+connectProb <-totalBisexualMat*(maxBisexualMat^(-1))
+BisexualConnectProb1 <- connectProb
+totalBisexualMat1 <- totalBisexualMat
+maxBisexualMat1 <- maxBisexualMat
+normativeDf <- cbind(normativeDf, Bi = connectProb[3,9:304])
+```
+
+# Straight
+
+```{r}
+nHeterosexual <- sum(rawFirst$SexC=="Heterosexual")
+maxHeterosexualMat <- matrix(nrow=304,ncol=304,nHeterosexual)
+totalHeterosexualMat <- matrix(nrow=304,ncol=304,0)
+HeterosexualIDs <- rawFirst$id[rawFirst$SexC=="Heterosexual"]
+HeterosexualAllNoms1 <- matrix(nrow=nHeterosexual, ncol=296)
+for(i in 1:length(HeterosexualIDs)){
+  totalHeterosexualMat = totalHeterosexualMat + get(paste0("subTFMat.",HeterosexualIDs[i]))
+  HeterosexualAllNoms1[i, ] <- get(paste0("subTFMat.",HeterosexualIDs[i]))[3,9:304]
+}
+Heterosexualthreshold <- round(.25 * nHeterosexual)
+
+
+# use totalMatrixP devided by the maxmatrixP to see the % of the endorcement
+connectProb <-totalHeterosexualMat*(maxHeterosexualMat^(-1))
+HeteroConnectProb1 <- connectProb
+totalHeterosexualMat1 <- totalHeterosexualMat
+maxHeterosexualMat1 <- maxHeterosexualMat
+normativeDf <- cbind(normativeDf, Hetero = connectProb[3,9:304])
+```
+
+# Agnostic
+
+```{r}
+nAgnostic <- sum(rawFirst$ReligC=="Agnostic")
+maxAgnosticMat <- matrix(nrow=304,ncol=304,nAgnostic)
+totalAgnosticMat <- matrix(nrow=304,ncol=304,0)
+AgnosticIDs <- rawFirst$id[rawFirst$ReligC=="Agnostic"]
+AgnosticAllNoms1 <- matrix(nrow=nAgnostic, ncol=296)
+for(i in 1:length(AgnosticIDs)){
+  totalAgnosticMat = totalAgnosticMat + get(paste0("subTFMat.",AgnosticIDs[i]))
+  AgnosticAllNoms1[i, ] <- get(paste0("subTFMat.",AgnosticIDs[i]))[4,9:304]
+}
+Agnosticthreshold <- round(.25 * nAgnostic)
+
+
+# use totalMatrixP devided by the maxmatrixP to see the % of the endorcement
+connectProb <-totalAgnosticMat*(maxAgnosticMat^(-1))
+AgnosticConnectProb1 <- connectProb
+totalAgnosticMat1 <- totalAgnosticMat
+maxAgnosticMat1 <- maxAgnosticMat
+normativeDf <- cbind(normativeDf, Agnostic = connectProb[4,9:304])
+```
+
+# Atheist
+
+```{r}
+nAtheist <- sum(rawFirst$ReligC=="Atheist")
+maxAtheistMat <- matrix(nrow=304,ncol=304,nAtheist)
+totalAtheistMat <- matrix(nrow=304,ncol=304,0)
+AtheistIDs <- rawFirst$id[rawFirst$ReligC=="Atheist"]
+AtheistAllNoms1 <- matrix(nrow=nAtheist, ncol=296)
+for(i in 1:length(AtheistIDs)){
+  totalAtheistMat = totalAtheistMat + get(paste0("subTFMat.",AtheistIDs[i]))
+  AtheistAllNoms1[i, ] <- get(paste0("subTFMat.",AtheistIDs[i]))[4,9:304]
+}
+Atheistthreshold <- round(.25 * nAtheist)
+
+
+# use totalMatrixP devided by the maxmatrixP to see the % of the endorcement
+connectProb <-totalAtheistMat*(maxAtheistMat^(-1))
+AtheistConnectProb1 <- connectProb
+totalAtheistMat1 <- totalAtheistMat
+maxAtheistMat1 <- maxAtheistMat
+normativeDf <- cbind(normativeDf, Atheist = connectProb[4,9:304])
+```
+
+# Catholic
+
+```{r}
+nCatholic <- sum(rawFirst$ReligC=="Catholic")
+maxCatholicMat <- matrix(nrow=304,ncol=304,nCatholic)
+totalCatholicMat <- matrix(nrow=304,ncol=304,0)
+CatholicIDs <- rawFirst$id[rawFirst$ReligC=="Catholic"]
+CatholicAllNoms1 <- matrix(nrow=nCatholic, ncol=296)
+for(i in 1:length(CatholicIDs)){
+  totalCatholicMat = totalCatholicMat + get(paste0("subTFMat.",CatholicIDs[i]))
+  CatholicAllNoms1[i, ] <- get(paste0("subTFMat.",CatholicIDs[i]))[4,9:304]
+}
+Catholicthreshold <- round(.25 * nCatholic)
+
+
+# use totalMatrixP devided by the maxmatrixP to see the % of the endorcement
+connectProb <-totalCatholicMat*(maxCatholicMat^(-1))
+CatholicConnectProb1 <- connectProb
+totalCatholicMat1 <- totalCatholicMat
+maxCatholicMat1 <- maxCatholicMat
+normativeDf <- cbind(normativeDf, Catholic = connectProb[4,9:304])
+```
+
+# Christian
+
+```{r}
+nChristian <- sum(rawFirst$ReligC=="Christian")
+maxChristianMat <- matrix(nrow=304,ncol=304,nChristian)
+totalChristianMat <- matrix(nrow=304,ncol=304,0)
+ChristianIDs <- rawFirst$id[rawFirst$ReligC=="Christian"]
+ChristianAllNoms1 <- matrix(nrow=nChristian, ncol=296)
+for(i in 1:length(ChristianIDs)){
+  totalChristianMat = totalChristianMat + get(paste0("subTFMat.",ChristianIDs[i]))
+  ChristianAllNoms1[i, ] <- get(paste0("subTFMat.",ChristianIDs[i]))[4,9:304]
+}
+Christianthreshold <- round(.25 * nChristian)
+
+
+# use totalMatrixP devided by the maxmatrixP to see the % of the endorcement
+connectProb <-totalChristianMat*(maxChristianMat^(-1))
+ChristianConnectProb1 <- connectProb
+totalChristianMat1 <- totalChristianMat
+maxChristianMat1 <- maxChristianMat
+normativeDf <- cbind(normativeDf, Christian = connectProb[4,9:304])
+```
+
+# Democrat
+
+```{r}
+nDemocrat <- sum(rawFirst$PolC=="Democrat")
+maxDemocratMat <- matrix(nrow=304,ncol=304,nDemocrat)
+totalDemocratMat <- matrix(nrow=304,ncol=304,0)
+DemocratIDs <- rawFirst$id[rawFirst$PolC=="Democrat"]
+DemocratAllNoms1 <- matrix(nrow=nDemocrat, ncol=296)
+for(i in 1:length(DemocratIDs)){
+  totalDemocratMat = totalDemocratMat + get(paste0("subTFMat.",DemocratIDs[i]))
+  DemocratAllNoms1[i, ] <- get(paste0("subTFMat.",DemocratIDs[i]))[5,9:304]
+}
+Democratthreshold <- round(.25 * nDemocrat)
+
+
+# use totalMatrixP devided by the maxmatrixP to see the % of the endorcement
+connectProb <-totalDemocratMat*(maxDemocratMat^(-1))
+DemocratConnectProb1 <- connectProb
+totalDemocratMat1 <- totalDemocratMat
+maxDemocratMat1 <- maxDemocratMat
+normativeDf <- cbind(normativeDf, Democrat = connectProb[5,9:304])
+```
+
+```{r}
+dir.create("~/Google Drive/Volumes/Research Project/Identities to Traits/Normative/Analysis/")
+setwd("~/Google Drive/Volumes/Research Project/Identities to Traits/Study 1/Cleaning/Output/Normative/")
+write.csv(normativeDf, "normativeDfStudy1.csv", row.names = F)
+```
+
+```{r}
+rm(list=ls(pattern="^sub"))
+rm(list=ls(pattern="^raw"))
+load("~/Google Drive/Volumes/Research Project/Identities to Traits/Study 2/Cleaning/Output/id2traitsworkspace.RData")
+```
+
+# Hispanic
+
+```{r}
+nLatino <- sum(rawFirst$RaceC=="Hispanic/Latino")
+maxLatinoMat <- matrix(nrow=304,ncol=304,nLatino)
+totalLatinoMat <- matrix(nrow=304,ncol=304,0)
+LatinoIDs <- rawFirst$id[rawFirst$RaceC=="Hispanic/Latino"]
+LatinoAllNoms2 <- matrix(nrow=nLatino, ncol=296)
+for(i in 1:length(LatinoIDs)){
+  totalLatinoMat = totalLatinoMat + get(paste0("subTFMat.",LatinoIDs[i]))
+  LatinoAllNoms2[i, ] <- get(paste0("subTFMat.",LatinoIDs[i]))[1,9:304]
+}
+Latinothreshold <- round(.25 * nLatino)
+
+
+# use totalMatrixP devided by the maxmatrixP to see the % of the endorcement
+connectProb <-totalLatinoMat*(maxLatinoMat^(-1))
+LatinoConnectProb2 <- connectProb
+totalLatinoMat2 <- totalLatinoMat
+maxLatinoMat2 <- maxLatinoMat
+normativeDf2 <- data.frame(traits = colnames(connectProb[,9:304]), Latino=connectProb[1,9:304])
+```
+
+# Asian
+
+```{r}
+nAsian <- sum(rawFirst$RaceC=="Asian")
+maxAsianMat <- matrix(nrow=304,ncol=304,nAsian)
+totalAsianMat <- matrix(nrow=304,ncol=304,0)
+AsianIDs <- rawFirst$id[rawFirst$RaceC=="Asian"]
+AsianAllNoms2 <- matrix(nrow=nAsian, ncol=296)
+for(i in 1:length(AsianIDs)){
+  totalAsianMat = totalAsianMat + get(paste0("subTFMat.",AsianIDs[i]))
+  AsianAllNoms2[i, ] <- get(paste0("subTFMat.",AsianIDs[i]))[1,9:304]
+}
+Asianthreshold <- round(.25 * nAsian)
+
+
+# use totalMatrixP devided by the maxmatrixP to see the % of the endorcement
+connectProb <-totalAsianMat*(maxAsianMat^(-1))
+AsianConnectProb2 <- connectProb
+totalAsianMat2 <- totalAsianMat
+maxAsianMat2 <- maxAsianMat
+normativeDf2 <- cbind(normativeDf2, Asian = connectProb[1,9:304])
+```
+
+# Men
+
+```{r}
+nMale <- sum(rawFirst$GenderC=="Cisgender Male")
+maxMaleMat <- matrix(nrow=304,ncol=304,nMale)
+totalMaleMat <- matrix(nrow=304,ncol=304,0)
+MaleIDs <- rawFirst$id[rawFirst$GenderC=="Cisgender Male"]
+MaleAllNoms2 <- matrix(nrow=nMale, ncol=296)
+for(i in 1:length(MaleIDs)){
+  totalMaleMat = totalMaleMat + get(paste0("subTFMat.",MaleIDs[i]))
+  MaleAllNoms2[i, ] <- get(paste0("subTFMat.",MaleIDs[i]))[2,9:304]
+}
+Malethreshold <- round(.25 * nMale)
+
+# use totalMatrixP devided by the maxmatrixP to see the % of the endorcement
+connectProb <-totalMaleMat*(maxMaleMat^(-1))
+MaleConnectProb2 <- connectProb
+MaleConnectProb2 <- connectProb
+totalMaleMat2 <- totalMaleMat
+maxMaleMat2 <- maxMaleMat
+normativeDf2 <- cbind(normativeDf2, Male = connectProb[2,9:304])
+```
+
+# Women
+
+```{r}
+nFemale <- sum(rawFirst$GenderC=="Cisgender Female")
+maxFemaleMat <- matrix(nrow=304,ncol=304,nFemale)
+totalFemaleMat <- matrix(nrow=304,ncol=304,0)
+FemaleIDs <- rawFirst$id[rawFirst$GenderC=="Cisgender Female"]
+FemaleAllNoms2 <- matrix(nrow=nFemale, ncol=296)
+for(i in 1:length(FemaleIDs)){
+  totalFemaleMat = totalFemaleMat + get(paste0("subTFMat.",FemaleIDs[i]))
+  FemaleAllNoms2[i, ] <- get(paste0("subTFMat.",FemaleIDs[i]))[2,9:304]
+}
+Femalethreshold <- round(.25 * nFemale)
+
+
+# use totalMatrixP devided by the maxmatrixP to see the % of the endorcement
+connectProb <-totalFemaleMat*(maxFemaleMat^(-1))
+FemaleConnectProb <- connectProb
+FemaleConnectProb2 <- connectProb
+totalFemaleMat2 <- totalFemaleMat
+maxFemaleMat2 <- maxFemaleMat
+normativeDf2 <- cbind(normativeDf2, Female = connectProb[2,9:304])
+```
+
+# Bisexual
+
+```{r}
+nBisexual <- sum(rawFirst$SexC=="Bisexual")
+maxBisexualMat <- matrix(nrow=304,ncol=304,nBisexual)
+totalBisexualMat <- matrix(nrow=304,ncol=304,0)
+BisexualIDs <- rawFirst$id[rawFirst$SexC=="Bisexual"]
+BisexualAllNoms2 <- matrix(nrow=nBisexual, ncol=296)
+for(i in 1:length(BisexualIDs)){
+  totalBisexualMat = totalBisexualMat + get(paste0("subTFMat.",BisexualIDs[i]))
+  BisexualAllNoms2[i, ] <- get(paste0("subTFMat.",BisexualIDs[i]))[3,9:304]
+}
+Bisexualthreshold <- round(.25 * nBisexual)
+
+
+# use totalMatrixP devided by the maxmatrixP to see the % of the endorcement
+connectProb <-totalBisexualMat*(maxBisexualMat^(-1))
+BisexualConnectProb2 <- connectProb
+totalBisexualMat2 <- totalBisexualMat
+maxBisexualMat2 <- maxBisexualMat
+normativeDf2 <- cbind(normativeDf2, Bi = connectProb[3,9:304])
+```
+
+# Straight
+
+```{r}
+nHeterosexual <- sum(rawFirst$SexC=="Heterosexual")
+maxHeterosexualMat <- matrix(nrow=304,ncol=304,nHeterosexual)
+totalHeterosexualMat <- matrix(nrow=304,ncol=304,0)
+HeterosexualIDs <- rawFirst$id[rawFirst$SexC=="Heterosexual"]
+HeterosexualAllNoms2 <- matrix(nrow=nHeterosexual, ncol=296)
+for(i in 1:length(HeterosexualIDs)){
+  totalHeterosexualMat = totalHeterosexualMat + get(paste0("subTFMat.",HeterosexualIDs[i]))
+  HeterosexualAllNoms2[i, ] <- get(paste0("subTFMat.",HeterosexualIDs[i]))[3,9:304]
+}
+Heterosexualthreshold <- round(.25 * nHeterosexual)
+
+
+# use totalMatrixP devided by the maxmatrixP to see the % of the endorcement
+connectProb <-totalHeterosexualMat*(maxHeterosexualMat^(-1))
+HeteroConnectProb2 <- connectProb
+totalHeterosexualMat2 <- totalHeterosexualMat
+maxHeterosexualMat2 <- maxHeterosexualMat
+normativeDf2 <- cbind(normativeDf2, Hetero = connectProb[3,9:304])
+```
+
+# Agnostic
+
+```{r}
+nAgnostic <- sum(rawFirst$ReligC=="Agnostic")
+maxAgnosticMat <- matrix(nrow=304,ncol=304,nAgnostic)
+totalAgnosticMat <- matrix(nrow=304,ncol=304,0)
+AgnosticIDs <- rawFirst$id[rawFirst$ReligC=="Agnostic"]
+AgnosticAllNoms2 <- matrix(nrow=nAgnostic, ncol=296)
+for(i in 1:length(AgnosticIDs)){
+  totalAgnosticMat = totalAgnosticMat + get(paste0("subTFMat.",AgnosticIDs[i]))
+  AgnosticAllNoms2[i, ] <- get(paste0("subTFMat.",AgnosticIDs[i]))[4,9:304]
+}
+Agnosticthreshold <- round(.25 * nAgnostic)
+
+
+# use totalMatrixP devided by the maxmatrixP to see the % of the endorcement
+connectProb <-totalAgnosticMat*(maxAgnosticMat^(-1))
+AgnosticConnectProb2 <- connectProb
+totalAgnosticMat2 <- totalAgnosticMat
+maxAgnosticMat2 <- maxAgnosticMat
+normativeDf2 <- cbind(normativeDf2, Agnostic = connectProb[4,9:304])
+```
+
+# Atheist
+
+```{r}
+nAtheist <- sum(rawFirst$ReligC=="Atheist")
+maxAtheistMat <- matrix(nrow=304,ncol=304,nAtheist)
+totalAtheistMat <- matrix(nrow=304,ncol=304,0)
+AtheistIDs <- rawFirst$id[rawFirst$ReligC=="Atheist"]
+AtheistAllNoms2 <- matrix(nrow=nAtheist, ncol=296)
+for(i in 1:length(AtheistIDs)){
+  totalAtheistMat = totalAtheistMat + get(paste0("subTFMat.",AtheistIDs[i]))
+  AtheistAllNoms2[i, ] <- get(paste0("subTFMat.",AtheistIDs[i]))[4,9:304]
+}
+Atheistthreshold <- round(.25 * nAtheist)
+
+
+# use totalMatrixP devided by the maxmatrixP to see the % of the endorcement
+connectProb <-totalAtheistMat*(maxAtheistMat^(-1))
+AtheistConnectProb2 <- connectProb
+totalAtheistMat2 <- totalAtheistMat
+maxAtheistMat2 <- maxAtheistMat
+normativeDf2 <- cbind(normativeDf2, Atheist = connectProb[4,9:304])
+```
+
+# Catholic
+
+```{r}
+nCatholic <- sum(rawFirst$ReligC=="Catholic")
+maxCatholicMat <- matrix(nrow=304,ncol=304,nCatholic)
+totalCatholicMat <- matrix(nrow=304,ncol=304,0)
+CatholicIDs <- rawFirst$id[rawFirst$ReligC=="Catholic"]
+CatholicAllNoms2 <- matrix(nrow=nCatholic, ncol=296)
+for(i in 1:length(CatholicIDs)){
+  totalCatholicMat = totalCatholicMat + get(paste0("subTFMat.",CatholicIDs[i]))
+  CatholicAllNoms2[i, ] <- get(paste0("subTFMat.",CatholicIDs[i]))[4,9:304]
+}
+Catholicthreshold <- round(.25 * nCatholic)
+
+
+# use totalMatrixP devided by the maxmatrixP to see the % of the endorcement
+connectProb <-totalCatholicMat*(maxCatholicMat^(-1))
+CatholicConnectProb2 <- connectProb
+totalCatholicMat2 <- totalCatholicMat
+maxCatholicMat2 <- maxCatholicMat
+normativeDf2 <- cbind(normativeDf2, Catholic = connectProb[4,9:304])
+```
+
+# Christian
+
+```{r}
+nChristian <- sum(rawFirst$ReligC=="Christian")
+maxChristianMat <- matrix(nrow=304,ncol=304,nChristian)
+totalChristianMat <- matrix(nrow=304,ncol=304,0)
+ChristianIDs <- rawFirst$id[rawFirst$ReligC=="Christian"]
+ChristianAllNoms2 <- matrix(nrow=nChristian, ncol=296)
+for(i in 1:length(ChristianIDs)){
+  totalChristianMat = totalChristianMat + get(paste0("subTFMat.",ChristianIDs[i]))
+  ChristianAllNoms2[i, ] <- get(paste0("subTFMat.",ChristianIDs[i]))[4,9:304]
+}
+Christianthreshold <- round(.25 * nChristian)
+
+
+# use totalMatrixP devided by the maxmatrixP to see the % of the endorcement
+connectProb <-totalChristianMat*(maxChristianMat^(-1))
+ChristianConnectProb2 <- connectProb
+totalChristianMat2 <- totalChristianMat
+maxChristianMat2 <- maxChristianMat
+normativeDf2 <- cbind(normativeDf2, Christian = connectProb[4,9:304])
+```
+
+# Democrat
+
+```{r}
+nDemocrat <- sum(rawFirst$PolC=="Democrat")
+maxDemocratMat <- matrix(nrow=304,ncol=304,nDemocrat)
+totalDemocratMat <- matrix(nrow=304,ncol=304,0)
+DemocratIDs <- rawFirst$id[rawFirst$PolC=="Democrat"]
+DemocratAllNoms2 <- matrix(nrow=nDemocrat, ncol=296)
+for(i in 1:length(DemocratIDs)){
+  totalDemocratMat = totalDemocratMat + get(paste0("subTFMat.",DemocratIDs[i]))
+  DemocratAllNoms2[i, ] <- get(paste0("subTFMat.",DemocratIDs[i]))[5,9:304]
+}
+Democratthreshold <- round(.25 * nDemocrat)
+
+
+# use totalMatrixP devided by the maxmatrixP to see the % of the endorcement
+connectProb <-totalDemocratMat*(maxDemocratMat^(-1))
+DemocratConnectProb2 <- connectProb
+totalDemocratMat2 <- totalDemocratMat
+maxDemocratMat2 <- maxDemocratMat
+normativeDf2 <- cbind(normativeDf2, Democrat = connectProb[5,9:304])
+```
+
+```{r}
+dir.create("~/Google Drive/Volumes/Research Project/Identities to Traits/Normative/Analysis/")
+setwd("~/Google Drive/Volumes/Research Project/Identities to Traits/Study 2/Cleaning/Output/Normative/")
+write.csv(normativeDf2, "normativeDfStudy2.csv", row.names = F)
+```
+
+```{r}
+LatinoConnectProb12 <- (totalLatinoMat1+totalLatinoMat2)*((maxLatinoMat1+maxLatinoMat2)^(-1))
+AsianConnectProb12 <- (totalAsianMat1+totalAsianMat2)*((maxAsianMat1+maxAsianMat2)^(-1))
+BisexualConnectProb12 <- (totalBisexualMat1+totalBisexualMat2)*((maxBisexualMat1+maxBisexualMat2)^(-1))
+HeterosexualConnectProb12 <- (totalHeterosexualMat1+totalHeterosexualMat2)*((maxHeterosexualMat1+maxHeterosexualMat2)^(-1))
+AgnosticConnectProb12 <- (totalAgnosticMat1+totalAgnosticMat2)*((maxAgnosticMat1+maxAgnosticMat2)^(-1))
+AtheistConnectProb12 <- (totalAtheistMat1+totalAtheistMat2)*((maxAtheistMat1+maxAtheistMat2)^(-1))
+CatholicConnectProb12 <- (totalCatholicMat1+totalCatholicMat2)*((maxCatholicMat1+maxCatholicMat2)^(-1))
+ChristianConnectProb12 <- (totalChristianMat1+totalChristianMat2)*((maxChristianMat1+maxChristianMat2)^(-1))
+MaleConnectProb12 <- (totalMaleMat1+totalMaleMat2)*((maxMaleMat1+maxMaleMat2)^(-1))
+FemaleConnectProb12 <- (totalFemaleMat1+totalFemaleMat2)*((maxFemaleMat1+maxFemaleMat2)^(-1))
+DemocratConnectProb12 <- (totalDemocratMat1+totalDemocratMat2)*((maxDemocratMat1+maxDemocratMat2)^(-1))
+
+normativeDf12 <- data.frame(traits = colnames(connectProb[,9:304]),
+                            Latino = LatinoConnectProb12[1,9:304],
+                            Asian = AsianConnectProb12[1,9:304],
+                            Male = MaleConnectProb12[2,9:304],
+                            Female = FemaleConnectProb12[2,9:304],
+                            Heterosexual = HeterosexualConnectProb12[3,9:304],
+                            Bisexual = BisexualConnectProb12[3,9:304],
+                            Agnostic = AgnosticConnectProb12[4,9:304],
+                            Atheist = AtheistConnectProb12[4,9:304],
+                            Catholic = CatholicConnectProb12[4,9:304],
+                            Christian = ChristianConnectProb12[4,9:304],
+                            Democrat = DemocratConnectProb12[5,9:304]
+                            )
+
+setwd("~/Google Drive/Volumes/Research Project/Identities to Traits//Normative/")
+write.csv(normativeDf12, "normativeDfStudy12.csv", row.names = F)
+```
+
+```{r}
+library(irr)
+```
+
+
+```{r}
+kappam.fleiss(t(LatinoAllNoms1))
+kappam.fleiss(t(LatinoAllNoms2))
+kappam.fleiss(t(rbind(LatinoAllNoms1,LatinoAllNoms2)))
+```
+
+```{r}
+kappam.fleiss(t(AsianAllNoms1))
+kappam.fleiss(t(AsianAllNoms2))
+kappam.fleiss(t(rbind(AsianAllNoms1,AsianAllNoms2)))
+```
+
+```{r}
+kappam.fleiss(t(FemaleAllNoms1))
+kappam.fleiss(t(FemaleAllNoms2))
+kappam.fleiss(t(rbind(FemaleAllNoms1,FemaleAllNoms2)))
+```
+
+```{r}
+kappam.fleiss(t(MaleAllNoms1))
+kappam.fleiss(t(MaleAllNoms2))
+kappam.fleiss(t(rbind(MaleAllNoms1,MaleAllNoms2)))
+```
+
+```{r}
+kappam.fleiss(t(CatholicAllNoms1))
+kappam.fleiss(t(CatholicAllNoms2))
+kappam.fleiss(t(rbind(CatholicAllNoms1,CatholicAllNoms2)))
+```
+
+```{r}
+kappam.fleiss(t(ChristianAllNoms1))
+kappam.fleiss(t(ChristianAllNoms2))
+kappam.fleiss(t(rbind(ChristianAllNoms1,ChristianAllNoms2)))
+```
+
+```{r}
+kappam.fleiss(t(AgnosticAllNoms1))
+kappam.fleiss(t(AgnosticAllNoms2))
+kappam.fleiss(t(rbind(AgnosticAllNoms1,AgnosticAllNoms2)))
+```
+
+```{r}
+kappam.fleiss(t(AtheistAllNoms1))
+kappam.fleiss(t(AtheistAllNoms2))
+kappam.fleiss(t(rbind(AtheistAllNoms1,AtheistAllNoms2)))
+```
+
+```{r}
+kappam.fleiss(t(DemocratAllNoms1))
+kappam.fleiss(t(DemocratAllNoms2))
+kappam.fleiss(t(rbind(DemocratAllNoms1,DemocratAllNoms2)))
+```
+
+```{r}
+kappam.fleiss(t(HeterosexualAllNoms1))
+kappam.fleiss(t(HeterosexualAllNoms2))
+kappam.fleiss(t(rbind(HeterosexualAllNoms1,HeterosexualAllNoms2)))
+```
+
+```{r}
+kappam.fleiss(t(BisexualAllNoms1))
+kappam.fleiss(t(BisexualAllNoms2))
+kappam.fleiss(t(rbind(BisexualAllNoms1,BisexualAllNoms2)))
+```
+
+
