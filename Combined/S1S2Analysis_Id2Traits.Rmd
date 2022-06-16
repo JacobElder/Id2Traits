@@ -932,6 +932,8 @@ traitvars <- traits %>% select(desirability:prevalence, outDegree:inDegree)
 cor(norms, traitvars)
 ```
 
+## Latino
+
 ```{r}
 raceLong <- subset(combLong, id == "Race")
 m <- lmer( scale(selfResp) ~ scale(Latino)*ynLatin + ( scale(Latino) | subID) + ( 1 | traits), data = raceLong)
@@ -939,11 +941,14 @@ summary(m)
 ggpredict(m, c("Latino", "ynLatin")) %>% plot()
 ```
 
+## Asian
+
 ```{r}
 m <- lmer( scale(selfResp) ~ scale(Asian)*ynAsian + ( scale(Asian) | subID) + ( 1 | traits), data = raceLong)
 summary(m)
 ggpredict(m, c("Asian", "ynAsian")) %>% plot()
 ```
+## Female
 
 ```{r}
 GenLong <- subset(combLong, id=="Gen")
@@ -952,5 +957,53 @@ summary(m)
 ggpredict(m, c("Female", "ynFemale")) %>% plot()
 ```
 
+## Male
+
+```{r}
+m <- lmer( scale(selfResp) ~ scale(Male)*ynMale + ( scale(Male) | subID) + ( 1 | traits), data = GenLong)
+summary(m)
+ggpredict(m, c("Male", "ynMale")) %>% plot()
+```
+
+## Catholic
+
+```{r}
+RelLong <- subset(combLong, id=="Rel")
+m <- lmer( scale(selfResp) ~ scale(Catholic)*ynCath + ( scale(Catholic) | subID) + ( 1 | traits), data = RelLong)
+summary(m)
+ggpredict(m, c("Catholic", "ynCath")) %>% plot()
+```
+
+## Christian
+
+```{r}
+m <- lmer( scale(selfResp) ~ scale(Christian)*ynChrist + ( scale(Christian) | subID) + ( 1 | traits), data = RelLong)
+summary(m)
+ggpredict(m, c("Christian", "ynChrist")) %>% plot()
+```
+
+## Atheist
+
+```{r}
+m <- lmer( scale(selfResp) ~ scale(Atheist)*ynAthei + ( scale(Atheist) | subID) + ( 1 | traits), data = RelLong)
+summary(m)
+ggpredict(m, c("Atheist", "ynAthei")) %>% plot()
+```
+
+## Agnostic
+
+```{r}
+m <- lmer( scale(selfResp) ~ scale(Agnostic)*ynAgnos + ( scale(Agnostic) | subID) + ( 1 | traits), data = RelLong)
+summary(m)
+ggpredict(m, c("Agnostic", "ynAgnos")) %>% plot()
+```
+## Democrat
+
+```{r}
+PolLong <- subset(combLong, id=="Pol")
+m <- lmer( scale(selfResp) ~ scale(Democrat)*ynDem + ( scale(Democrat) | subID) + ( 1 | traits), data = PolLong)
+summary(m)
+ggpredict(m, c("Democrat", "ynDem")) %>% plot()
+```
 
 
