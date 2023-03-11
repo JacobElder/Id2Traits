@@ -1,0 +1,171 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(here)
+library(ggeffects)
+library(dplyr)
+library(ggpubr)
+library(grid)
+library(lmerTest)
+library(wesanderson)
+here::i_am("./Combined/Plotting.Rmd")
+```
+
+```{r}
+library(devtools)
+devtools::source_url("https://raw.githubusercontent.com/JacobElder/MiscellaneousR/master/corToOne.R")
+devtools::source_url("https://raw.githubusercontent.com/JacobElder/MiscellaneousR/master/plotCommAxes.R")
+```
+
+```{r}
+fullLong1 <- arrow::read_parquet( here("Study 1/cleaned/id2traitDf.parquet") )
+orderDf1 <- arrow::read_parquet( here("Study 1/cleaned/orderDf.parquet") )
+idShort1 <- arrow::read_parquet( here("Study 1/cleaned/id2traitShort.parquet") )
+indDiff1 <- arrow::read_parquet( here("Study 1/cleaned/indDiff.parquet") )
+idSim1 <- arrow::read_parquet( here("Study 1/cleaned/identitySimDf.parquet") )
+```
+
+```{r}
+fullLong2 <- arrow::read_parquet( here("Study 2/cleaned/id2traitDf.parquet") )
+orderDf2 <- arrow::read_parquet( here("Study 2/cleaned/orderDf.parquet") )
+idShort2 <- arrow::read_parquet( here("Study 2/cleaned/id2traitShort.parquet") )
+indDiff2 <- arrow::read_parquet( here("Study 2/cleaned/indDiff.parquet") )
+idSim2 <- arrow::read_parquet( here("Study 2/cleaned/identitySimDf.parquet") )
+```
+
+```{r}
+plotDir <- "/Volumes/Research Project/Identities to Traits/Plots/"
+```
+
+
+```{r}
+# subset data for traits to only appear once per subject
+
+traitsPerS1 <- fullLong1 %>% distinct(subID, Idx, .keep_all = TRUE)
+traitsPerS2 <- fullLong2 %>% distinct(subID, Idx, .keep_all = TRUE)
+
+# subset data for only connected traits to appear per subject
+
+connectDf1 <- fullLong1 %>% filter(connect==1)
+connectDf2 <- fullLong2 %>% filter(connect==1)
+
+# convert to factors
+
+fullLong1$connect <- as.factor(fullLong1$connect)
+levels(fullLong1$connect) <- list(No  = "0", Yes = "1")
+
+fullLong2$connect <- as.factor(fullLong2$connect)
+levels(fullLong2$connect) <- list(No  = "0", Yes = "1")
+
+# pos neg asymmetry
+
+idShort1$pndiff <- idShort1$pI2Tdeg - idShort1$nI2Tdeg
+idShort2$pndiff <- idShort2$pI2Tdeg - idShort2$nI2Tdeg
+```
+
+```{r}
+
+pal <- colorRampPalette(wes_palette("Chevalier1", 4))(7)
+#ggplot(plotDf, aes(order, selfResp, color=as.factor(streng), fill = as.factor(streng) )) + 
+ggplot(plotDf, aes(order, selfResp )) + 
+  #ggdist::stat_halfeye(adjust = .5, width = .2, .width = 0, justification = 0, point_colour = NA, alpha = .3) +
+  facet_wrap(~streng) +
+  geom_boxplot(width = .2, outlier.shape = NA) + 
+  geom_jitter(width = .05, alpha = .3) + labs(y="Proportion of Desirable Choices",x="Trial Type") + jtools::theme_apa() +
+  scale_color_manual(values = pal) +
+  scale_fill_manual(values = pal) +
+```
+
+```{r}
+plotDf <- Rmisc::summarySE(data=orderDf, groupvars=c("order","streng","valence"), measurevar="selfResp",na.rm=T)
+ggplot(data=plotDf, aes(x=order, y=selfResp, fill= as.factor(streng) )) +
+geom_bar(stat="identity", position=position_dodge()) +
+  facet_wrap(~valence)
+
+plotDf <- Rmisc::summarySE(data=orderDf, groupvars=c("order","streng"), measurevar="selfResp",na.r=T)
+plotDf <- plotDf[plotDf$order<=3,]
+ggplot(data=plotDf, aes(x=order, y=selfResp, fill= as.factor(streng) )) +
+geom_bar(stat="identity", position=position_dodge()) + coord_cartesian(ylim = c(1, 6))
+```
+
+
+
+
+
+```{r}
+plotDf <- plotDf[complete.cases(plotDf),]
+plotDf <- plotDf[plotDf$order!=7,]
+plotDf %>%
+ggplot(aes(x = factor(streng), y = selfResp, fill = factor(order))) +
+  
+  # add half-violin from {ggdist} package
+  ggdist::stat_halfeye(
+    # adjust bandwidth
+    adjust = 0.5,
+    # move to the right
+    justification = -0.2,
+    # remove the slub interval
+    .width = 0,
+    point_colour = NA,
+  position=position_dodge()) + coord_flip()
+```
+
+```{r}
+plotDf <- Rmisc::summarySE(data=orderDf, groupvars=c("order","streng"), measurevar="selfResp",na.r=T)
+ggplot(data=plotDf, aes(x=order, y=selfResp, color= as.factor(streng) )) +
+geom_point() + geom_line()
+```
+
+```{r}
+plotDf <- Rmisc::summarySE(data=orderDf, groupvars=c("subID","order","streng"), measurevar="selfResp",na.rm=T)
+plotDf <-plotDf[plotDf$order<=5,]
+plotDf <- plotDf[complete.cases(plotDf),]
+ggplot(data=plotDf, aes(x=order, y=selfResp ))+
+geom_jitter(alpha=.2) + geom_smooth(method="lm") + facet_wrap(~streng)
+```
+
+
+```{r}
+plotDf <- Rmisc::summarySE(data=orderDf, groupvars=c("subID","order"), measurevar="selfResp",na.rm=T)
+plotDf<-plotDf[plotDf$order<=6,]
+#plotDf <- plotDf[complete.cases(plotDf),]
+
+order1plot <- ggplot(data=plotDf, aes(x=order, y=selfResp )) +
+geom_jitter(alpha=.2) + geom_smooth(color="black",method="lm") + jtools::theme_apa() + xlab("Trait's Distance from a Social Identity") + ylab("Self-Descriptiveness of Trait")
+
+plotDf2 <- Rmisc::summarySE(data=orderDf2, groupvars=c("subID","order"), measurevar="selfResp",na.rm=T)
+plotDf2<-plotDf2[plotDf2$order<=6,]
+order2plot <- ggplot(data=plotDf2, aes(x=order, y=selfResp )) +
+geom_jitter(alpha=.2) + geom_smooth(color="black",method="lm") + jtools::theme_apa() + xlab("Trait's Distance from a Social Identity") + ylab("Self-Descriptiveness of Trait")
+
+library(patchwork)
+order12plot <- order1plot+order2plot
+
+ggsave(paste0(plotDir, "order12.tiff"), order12plot, width = 9, height=5)
+ggsave(paste0(plotDir, "order12.png"), order12plot, width = 9, height=5)
+```
+
+```{r}
+plotDf <- Rmisc::summarySE(data=orderDf, groupvars=c("subID","order","streng"), measurevar="selfResp",na.rm=T)
+plotDf<-plotDf[plotDf$order<=6,]
+plotDf<-plotDf[complete.cases(plotDf),]
+orders1plot <- ggplot(data=plotDf, aes(x=order, y=selfResp, color= as.factor(streng) )) +
+geom_jitter(alpha=.2) + geom_smooth(alpha=.2,method="lm") + jtools::theme_apa()
+
+plotDf2 <- Rmisc::summarySE(data=orderDf2, groupvars=c("subID","order","streng"), measurevar="selfResp",na.rm=T)
+plotDf2<-plotDf2[plotDf2$order<=6,]
+plotDf2<-plotDf2[complete.cases(plotDf2),]
+orders2plot <- ggplot(data=plotDf2, aes(x=order, y=selfResp, color= as.factor(streng) )) +
+geom_jitter(alpha=.2) + geom_smooth(alpha=.2,method="lm") + jtools::theme_apa()
+
+orders12plot <- orders1plot+orders2plot
+
+ggsave(paste0(plotDir, "orders12.tiff"), orders12plot, width = 9, height=5)
+ggsave(paste0(plotDir, "orders12.png"), orders12plot, width = 9, height=5)
+```
+
+
+

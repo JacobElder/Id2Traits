@@ -19,20 +19,21 @@ source_url("https://raw.githubusercontent.com/JacobElder/MiscellaneousR/master/c
 source_url("https://raw.githubusercontent.com/JacobElder/MiscellaneousR/master/plotCommAxes.R")
 ```
 
+
 ```{r}
-fullLong1 <- data.table::fread("~/Google Drive/Volumes/Research Project/Identities to Traits/Study 1/Cleaning/Output/id2traitDf.csv")
-orderDf1 <- data.table::fread( "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 1/Cleaning/Output/orderDf.csv")
-idShort1 <- data.table::fread( "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 1/Cleaning/Output/id2traitShort.csv")
-indDiff1 <- data.table::fread( "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 1/Cleaning/Output/indDiff.csv")
-idSim1 <- data.table::fread( "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 1/Cleaning/Output/identitySimDf.csv")
+fullLong1 <- arrow::read_parquet( here("Study 1/cleaned/id2traitDf.parquet") )
+orderDf1 <- arrow::read_parquet( here("Study 1/cleaned/orderDf.parquet") )
+idShort1 <- arrow::read_parquet( here("Study 1/cleaned/id2traitShort.parquet") )
+indDiff1 <- arrow::read_parquet( here("Study 1/cleaned/indDiff.parquet") )
+idSim1 <- arrow::read_parquet( here("Study 1/cleaned/identitySimDf.parquet") )
 ```
 
 ```{r}
-fullLong2 <- data.table::fread("~/Google Drive/Volumes/Research Project/Identities to Traits/Study 2/Cleaning/Output/id2traitDf.csv")
-orderDf2 <- data.table::fread( "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 2/Cleaning/Output/orderDf.csv")
-idShort2 <- data.table::fread( "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 2/Cleaning/Output/id2traitShort.csv")
-indDiff2 <- data.table::fread( "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 2/Cleaning/Output/indDiff.csv")
-idSim2 <- data.table::fread( "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 2/Cleaning/Output/identitySimDf.csv")
+fullLong2 <- arrow::read_parquet( here("Study 2/cleaned/id2traitDf.parquet") )
+orderDf2 <- arrow::read_parquet( here("Study 2/cleaned/orderDf.parquet") )
+idShort2 <- arrow::read_parquet( here("Study 2/cleaned/id2traitShort.parquet") )
+indDiff2 <- arrow::read_parquet( here("Study 2/cleaned/indDiff.parquet") )
+idSim2 <- arrow::read_parquet( here("Study 2/cleaned/identitySimDf.parquet") )
 ```
 
 ```{r}
@@ -184,25 +185,44 @@ sm2.plot
 ```{r}
 plotCommAxes(sm1.plot, sm2.plot, "Identity Overlap", "Self-Evaluation")
 ```
-
-# Identity Distance
+# Trait Distance 
 
 ## Study 1
 
 ```{r}
-dm1<-lmer(scale(selfResp) ~ scale(order) * scale(streng) + scale(subTend) + scale(traitTend)  + ( scale(order) | subID ) + ( 1 | traits), data=orderDf1)
+dm1<-lmer(scale(selfResp) ~ scale(order) + scale(subTend) + scale(traitTend)  + ( scale(order) | subID ) + ( 1 | traits), data=orderDf1)
 summary(dm1)
-dm1.plot <- ggpredict(dm1, c("order", "streng")) %>% plot(show.title=FALSE) + jtools::theme_apa() + xlab("Distance from Identity") + ylab("Self-Evaluation")
+dm1.plot <- ggpredict(dm1, c("order")) %>% plot(show.title=FALSE) + jtools::theme_apa() + xlab("Distance from Identity") + ylab("Self-Evaluation")
 dm1.plot
 ```
 
 ## Study 2
 
 ```{r}
-dm2<-lmer(scale(selfResp) ~ scale(order) * scale(streng) + scale(subTend) + scale(traitTend)  + ( scale(order) | subID ) + ( 1 | traits), data=orderDf2)
+dm2<-lmer(scale(selfResp) ~ scale(order) + scale(subTend) + scale(traitTend)  + ( scale(order) | subID ) + ( 1 | traits), data=orderDf2)
 summary(dm2)
-dm2.plot <- ggpredict(dm2, c("order", "streng")) %>% plot(show.title=FALSE) + jtools::theme_apa() + xlab("Distance from Identity") + ylab("Self-Evaluation")
+dm2.plot <- ggpredict(dm2, c("order")) %>% plot(show.title=FALSE) + jtools::theme_apa() + xlab("Distance from Identity") + ylab("Self-Evaluation")
 dm2.plot
+```
+
+# Trait Distance Moderated by Identification
+
+## Study 1
+
+```{r}
+dms1<-lmer(scale(selfResp) ~ scale(order) * scale(streng) + scale(subTend) + scale(traitTend)  + ( scale(order) | subID ) + ( 1 | traits), data=orderDf1)
+summary(dms1)
+dms1.plot <- ggpredict(dms1, c("order", "streng")) %>% plot(show.title=FALSE) + jtools::theme_apa() + xlab("Distance from Identity") + ylab("Self-Evaluation")
+dms1.plot
+```
+
+## Study 2
+
+```{r}
+dms2<-lmer(scale(selfResp) ~ scale(order) * scale(streng) + scale(subTend) + scale(traitTend)  + ( scale(order) | subID ) + ( 1 | traits), data=orderDf2)
+summary(dms2)
+dms2.plot <- ggpredict(dms2, c("order", "streng")) %>% plot(show.title=FALSE) + jtools::theme_apa() + xlab("Distance from Identity") + ylab("Self-Evaluation")
+dms2.plot
 ```
 
 ## Combined Plot

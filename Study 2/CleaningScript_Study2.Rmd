@@ -4,6 +4,7 @@ output: html_notebook
 ---
 
 ```{r}
+library(here)
 library(igraph)
 library(tidyverse)
 library(careless)
@@ -1291,8 +1292,8 @@ orderDf <- merge(orderDf, tendTraitDf, by = "traits", all.x=T)
 ```{r}
 #write.csv(fullLong, "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 2/Cleaning/Output/id2traitDf.csv", row.names = F)
 write.csv(demos, "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 2/Cleaning/Output/demos.csv", row.names = F)
-write.csv(veryLong, "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 2/Cleaning/Output/id2traitDf.csv", row.names = F)
-write.csv(orderDf, "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 2/Cleaning/Output/orderDf.csv", row.names = F)
+#write.csv(veryLong, "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 2/Cleaning/Output/id2traitDf.csv", row.names = F)
+#write.csv(orderDf, "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 2/Cleaning/Output/orderDf.csv", row.names = F)
 write.csv(idShort, "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 2/Cleaning/Output/id2traitShort.csv", row.names = F)
 write.csv(indDiffSmall, "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 2/Cleaning/Output/indDiff.csv", row.names = F)
 write.csv(fullSimDf, "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 2/Cleaning/Output/identitySimDf.csv", row.names = F)
@@ -1301,7 +1302,16 @@ save.image("~/Google Drive/Volumes/Research Project/Identities to Traits/Study 2
 ```
 
 
-
+```{r}
+dir.create(here("Study 2/cleaned"))
+arrow::write_parquet(demos, here("Study 2/cleaned/demos.parquet"))
+arrow::write_parquet(veryLong, here("Study 2/cleaned/id2traitDf.parquet"))
+arrow::write_parquet(orderDf, here("Study 2/cleaned/orderDf.parquet"))
+arrow::write_parquet(idShort, here("Study 2/cleaned/id2traitShort.parquet"))
+arrow::write_parquet(indDiffSmall, here("Study 2/cleaned/indDiff.parquet"))
+arrow::write_parquet(fullSimDf, here("Study 2/cleaned/identitySimDf.parquet"))
+arrow::write_parquet(wideId, here("Study 2/cleaned/idWide.parquet"))
+```
 
 
 

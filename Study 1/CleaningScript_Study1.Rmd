@@ -7,11 +7,13 @@ output: html_notebook
 library(igraph)
 library(tidyverse)
 library(careless)
+library(here)
 ```
 
 ```{r}
 library(devtools)
 source_url("https://raw.githubusercontent.com/JacobElder/MiscellaneousR/master/assortativityNA.R")
+
 ```
 
 
@@ -1494,14 +1496,27 @@ orderDf <- merge(orderDf, tendTraitDf, by = "traits", all.x=T)
 ```{r}
 #write.csv(fullLong, "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 1/Cleaning/Output/id2traitDf.csv", row.names = F)
 write.csv(demos, "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 1/Cleaning/Output/demos.csv", row.names = F)
-write.csv(veryLong, "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 1/Cleaning/Output/id2traitDf.csv", row.names = F)
-write.csv(orderDf, "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 1/Cleaning/Output/orderDf.csv", row.names = F)
+# this literally won't write because it's so long
+#write.csv(veryLong, "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 1/Cleaning/Output/id2traitDf.csv", row.names = F)
+# same
+#write.csv(orderDf, "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 1/Cleaning/Output/orderDf.csv", row.names = F)
 write.csv(idShort, "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 1/Cleaning/Output/id2traitShort.csv", row.names = F)
 write.csv(indDiffSmall, "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 1/Cleaning/Output/indDiff.csv", row.names = F)
 write.csv(fullSimDf, "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 1/Cleaning/Output/identitySimDf.csv", row.names = F)
 write.csv(wideId, "~/Google Drive/Volumes/Research Project/Identities to Traits/Study 1/Cleaning/Output/idWide.csv", row.names = F)
 save.image("~/Google Drive/Volumes/Research Project/Identities to Traits/Study 1/Cleaning/Output/id2traitsworkspace.RData")
 ```
+
+```{r}
+arrow::write_parquet(demos, here("Study 1/cleaned/demos.parquet"))
+arrow::write_parquet(veryLong, here("Study 1/cleaned/id2traitDf.parquet"))
+arrow::write_parquet(orderDf, here("Study 1/cleaned/orderDf.parquet"))
+arrow::write_parquet(idShort, here("Study 1/cleaned/id2traitShort.parquet"))
+arrow::write_parquet(indDiffSmall, here("Study 1/cleaned/indDiff.parquet"))
+arrow::write_parquet(fullSimDf, here("Study 1/cleaned/identitySimDf.parquet"))
+arrow::write_parquet(wideId, here("Study 1/cleaned/idWide.parquet"))
+```
+
 
 
 

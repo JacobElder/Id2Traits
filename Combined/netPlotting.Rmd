@@ -1,0 +1,105 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(igraph)
+library(GGally)
+library(ggrepel)
+
+library(network)
+library(sna)
+library(ggplot2)
+```
+
+```{r}
+load("~/Google Drive/Volumes/Research Project/Identities to Traits/Study 1/Cleaning/Output/id2traitsworkspace.RData")
+```
+
+
+```{r}
+set.seed(5)
+# layout.exp = .25 is pretty good
+plotAll <- ggnet2(graph_pos, alpha = 0.75, size = "outdegree", node.color = "steelblue", edge.color = "grey", edge.alpha = 0.25, mode = "kamadakawai", layout.exp = .35, directed = TRUE) +
+  guides(color = FALSE, size = FALSE) #+ geom_text(aes(label = V(graph_pos)$tNames), size = 3.5)
+plotAll
+
+ggsave("/Volumes/GoogleDrive/My Drive/Volumes/Research Project/Identities to Traits/Study 1/Figures/cI2Teval.jpg", dpi=600)
+```
+
+```{r}
+V(subTFGraph.55520)$Names <-  c(idNames, posTraits$trait, negTraits$trait)
+ 
+V(subTFGraph.55520)$group[1:8] <- c("ID")
+V(subTFGraph.55520)$group[9:156] <- c("Pos")
+V(subTFGraph.55520)$group[157:304] <- c("Neg")
+
+FriendlyNet <- ego(subTFGraph.55520, order = 1, nodes = 6, mode = "out",
+  mindist = 0)
+FriendlyNet <- induced.subgraph(subTFGraph.55520, vids = unlist(FriendlyNet) )
+
+set.seed(2)
+
+library(GGally)
+plotOutdegree <- ggnet2(FriendlyNet, alpha = 0.75, size = "outdegree", color = "phono", edge.color = "grey", edge.alpha = 0.25, mode = "kamadakawai", layout.exp = .35, directed = TRUE) + 
+  guides(color = FALSE, size = FALSE) + geom_text(aes(label = V(FriendlyNet)$Names), size = 3.5)
+plotOutdegree
+
+ggnet2(subTFGraph.55520, alpha = 0.75, size = "outdegree", color = "group", palette = "Set2", edge.color = "grey", edge.alpha = 0.25, mode = "kamadakawai", layout.exp = .35, directed = TRUE) + 
+  guides(color = FALSE, size = FALSE) + geom_text(aes(label = V(subTFGraph.55520)$Names), size = 1)
+```
+
+```{r}
+mat<-as.matrix(as_adj(subTFGraph.55520))
+mat[1:304,1:8] <- 0
+subGraph<-graph.adjacency(mat)
+
+V(subGraph)$Names <-  c(idNames, posTraits$trait, negTraits$trait)
+V(subGraph)$group[1:8] <- c("ID")
+V(subGraph)$group[9:156] <- c("Pos")
+V(subGraph)$group[157:304] <- c("Neg")
+
+RaceNetNoTraits <- ego(subGraph, order = 1, nodes = 1, mode = "out",
+  mindist = 0)
+RaceNetNoTraits <- induced.subgraph(subGraph, vids = unlist(RaceNetNoTraits) )
+
+set.seed(2)
+
+library(GGally)
+plotOutdegree <- ggnet2(RaceNetNoTraits, alpha = 0.75, size = "outdegree", color = "phono", edge.color = "grey", edge.alpha = 0.8, mode = "kamadakawai", layout.exp = .35, directed = TRUE) + 
+  guides(color = FALSE, size = FALSE) + geom_text(aes(label = V(RaceNetNoTraits)$Names), size = 3.5, fontface="bold")
+plotOutdegree
+```
+
+```{r}
+mat<-as.matrix(as_adj(subIGraph.37203))
+#mat[1:304,1:8] <- 0
+subGraph<-graph.adjacency(mat)
+
+veryLong<-veryLong[order(match(veryLong$id,idNames)),]
+uniqueIdentities <- unique(veryLong$idQ[veryLong$subID==37203])
+uniqueIdentities
+
+V(subGraph)$Names <-  c(uniqueIdentities)
+
+set.seed(2)
+
+library(GGally)
+plotOutdegree <- ggnet2(subGraph, alpha = 0.7, size = "outdegree", color = "phono", edge.color = "grey", edge.alpha = 1, mode = "kamadakawai", layout.exp = .35, directed = TRUE) + 
+  guides(color = FALSE, size = FALSE) + geom_text(aes(label = V(subGraph)$Names), size = 3.5, fontface = "bold")
+plotOutdegree
+```
+
+```{r}
+
+```
+
+
+
+
+
+```{r}
+
+```
+
